@@ -1,0 +1,25 @@
+# Development Dockerfile with hot reloading
+FROM node:18-alpine
+
+# Install development dependencies
+RUN apk add --no-cache python3 make g++ git
+
+WORKDIR /app
+
+# Install nodemon globally
+RUN npm install -g nodemon
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev)
+RUN npm install
+
+# Copy source code (will be overridden by volume mount)
+COPY . .
+
+# Expose ports
+EXPOSE 3000 5000
+
+# Start development servers
+CMD ["npm", "run", "dev:all"]

@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Production build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+uploads/
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Database
+*.sqlite
+*.sqlite3
+prisma/migrations/
+prisma/dev.db
+prisma/dev.db-journal
+
+# Cache
+.cache/
+.parcel-cache/
+
+# OS files
+Thumbs.db
+
+# PWA
+workbox-config.js
+sw.js
+sw.js.map
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# AWS
+.aws/
+
+# Secrets
+secrets/
+*.secret

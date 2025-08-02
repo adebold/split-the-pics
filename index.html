@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Secure photo sharing with face detection and end-to-end encryption">
+    
+    <title>SecureSnap - Private Photo Sharing</title>
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Critical CSS inline for faster FCP -->
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overscroll-behavior: contain;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        #app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Loading skeleton */
+        .app-skeleton {
+            padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+            max-width: 428px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-header {
+            height: 60px;
+            margin-bottom: 16px;
+        }
+        
+        .skeleton-content {
+            height: 400px;
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --text: #f8fafc;
+                --border: #334155;
+            }
+            
+            .skeleton {
+                background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            }
+        }
+    </style>
+    
+    <!-- Preconnect to CDN -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+</head>
+<body>
+    <div id="app">
+        <!-- Initial loading state -->
+        <div class="app-skeleton">
+            <div class="skeleton skeleton-header"></div>
+            <div class="skeleton skeleton-content"></div>
+        </div>
+    </div>
+    
+    <!-- Alpine.js for reactive UI (loaded from CDN for better caching) -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
+    
+    <!-- Main app bundle -->
+    <script type="module" src="/src/client/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  name              String
+  password          String
+  twoFactorEnabled  Boolean   @default(false)
+  twoFactorSecret   String?
+  backupCodes       String[]  @default([])
+  lockedUntil       DateTime?
+  failedAttempts    Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  photos            Photo[]
+  sharedPhotos      SharedPhoto[]
+  albums            Album[]
+  albumAccess       AlbumAccess[]
+  refreshTokens     RefreshToken[]
+  sessions          Session[]
+  trustedDevices    TrustedDevice[]
+  magicLinks        MagicLink[]
+  qrSessions        QRSession[]
+  settings          UserSettings?
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+
+  @@index([email])
+}
+
+// User settings
+model UserSettings {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  theme             String   @default("light")
+  notificationsEnabled Boolean @default(true)
+  faceDetectionEnabled Boolean @default(true)
+  autoBackupEnabled    Boolean @default(false)
+  storageQuotaBytes    BigInt  @default(5368709120) // 5GB default
+  usedStorageBytes     BigInt  @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Photo model
+model Photo {
+  id                String   @id @default(uuid())
+  userId            String
+  originalUrl       String
+  thumbnailUrl      String?
+  compressedUrl     String?
+  fileName          String
+  mimeType          String
+  sizeBytes         BigInt
+  width             Int?
+  height            Int?
+  metadata          Json?    // EXIF data, location (if allowed)
+  encryptionKey     String   // Encrypted with user's key
+  encryptionIv      String
+  hash              String   // For duplicate detection
+  isDeleted         Boolean  @default(false)
+  deletedAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  faces             Face[]
+  albumPhotos       AlbumPhoto[]
+  sharedPhotos      SharedPhoto[]
+  tags              PhotoTag[]
+
+  @@index([userId, createdAt])
+  @@index([hash])
+}
+
+// Face detection results
+model Face {
+  id                String   @id @default(uuid())
+  photoId           String
+  personId          String?  // Null until grouped
+  embedding         Float[]  // Face embedding vector
+  boundingBox       Json     // {x, y, width, height}
+  landmarks         Json?    // Facial landmarks
+  confidence        Float
+  createdAt         DateTime @default(now())
+
+  // Relations
+  photo             Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  person            Person?  @relation(fields: [personId], references: [id])
+
+  @@index([photoId])
+  @@index([personId])
+}
+
+// Person grouping for faces
+model Person {
+  id                String   @id @default(uuid())
+  userId            String
+  name              String?
+  isIdentified      Boolean  @default(false)
+  faceCount         Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  faces             Face[]
+}
+
+// Album model
+model Album {
+  id                String   @id @default(uuid())
+  userId            String
+  name              String
+  description       String?
+  coverPhotoId      String?
+  isShared          Boolean  @default(false)
+  shareSettings     Json?    // {allowDownload, allowUpload, etc}
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos            AlbumPhoto[]
+  access            AlbumAccess[]
+
+  @@index([userId])
+}
+
+// Many-to-many relation for album photos
+model AlbumPhoto {
+  id                String   @id @default(uuid())
+  albumId           String
+  photoId           String
+  addedAt           DateTime @default(now())
+
+  // Relations
+  album             Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  photo             Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@unique([albumId, photoId])
+  @@index([albumId])
+  @@index([photoId])
+}
+
+// Album access permissions
+model AlbumAccess {
+  id                String   @id @default(uuid())
+  albumId           String
+  userId            String
+  permission        Permission
+  grantedAt         DateTime @default(now())
+
+  // Relations
+  album             Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([albumId, userId])
+  @@index([albumId])
+  @@index([userId])
+}
+
+// Shared photo with time-limited access
+model SharedPhoto {
+  id                String   @id @default(uuid())
+  photoId           String
+  sharedByUserId    String
+  shareCode         String   @unique
+  expiresAt         DateTime
+  maxViews          Int?
+  currentViews      Int      @default(0)
+  password          String?  // Optional password protection
+  allowDownload     Boolean  @default(false)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  // Relations
+  photo             Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  sharedBy          User     @relation(fields: [sharedByUserId], references: [id])
+  accessLogs        ShareAccessLog[]
+
+  @@index([shareCode])
+  @@index([expiresAt])
+}
+
+// Log access to shared photos
+model ShareAccessLog {
+  id                String   @id @default(uuid())
+  sharedPhotoId     String
+  ipAddress         String
+  userAgent         String?
+  accessedAt        DateTime @default(now())
+
+  // Relations
+  sharedPhoto       SharedPhoto @relation(fields: [sharedPhotoId], references: [id], onDelete: Cascade)
+
+  @@index([sharedPhotoId])
+}
+
+// Photo tags
+model PhotoTag {
+  id                String   @id @default(uuid())
+  photoId           String
+  tag               String
+  createdAt         DateTime @default(now())
+
+  // Relations
+  photo             Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@unique([photoId, tag])
+  @@index([photoId])
+  @@index([tag])
+}
+
+// Refresh tokens for JWT
+model RefreshToken {
+  id                String   @id @default(uuid())
+  userId            String
+  token             String   @unique
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// Session tokens for 2FA
+model Session {
+  id                String   @id @default(uuid())
+  userId            String
+  token             String   @unique
+  expiresAt         DateTime
+  ipAddress         String?
+  userAgent         String?
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// Trusted devices for 2FA
+model TrustedDevice {
+  id                String   @id @default(uuid())
+  userId            String
+  deviceToken       String   @unique
+  deviceName        String?
+  lastUsedAt        DateTime @default(now())
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([deviceToken])
+  @@index([userId])
+}
+
+// Magic link tokens
+model MagicLink {
+  id                String   @id @default(uuid())
+  userId            String
+  token             String   @unique
+  expiresAt         DateTime
+  usedAt            DateTime?
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// QR code authentication sessions
+model QRSession {
+  id                String   @id @default(uuid())
+  sessionId         String   @unique
+  token             String   @unique
+  userId            String?  // Null until authenticated
+  deviceInfo        Json?
+  status            QRStatus @default(PENDING)
+  expiresAt         DateTime
+  authenticatedAt   DateTime?
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User?    @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
+  @@index([token])
+}
+
+// Notifications
+model Notification {
+  id                String   @id @default(uuid())
+  userId            String
+  type              NotificationType
+  title             String
+  message           String
+  data              Json?
+  isRead            Boolean  @default(false)
+  readAt            DateTime?
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+}
+
+// Audit logs for security
+model AuditLog {
+  id                String   @id @default(uuid())
+  userId            String?
+  action            String
+  entityType        String
+  entityId          String?
+  metadata          Json?
+  ipAddress         String?
+  userAgent         String?
+  createdAt         DateTime @default(now())
+
+  // Relations
+  user              User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+// Enums
+enum Permission {
+  VIEW
+  UPLOAD
+  EDIT
+  DELETE
+  ADMIN
+}
+
+enum QRStatus {
+  PENDING
+  AUTHENTICATED
+  EXPIRED
+  CANCELLED
+}
+
+enum NotificationType {
+  SHARE_RECEIVED
+  ALBUM_INVITATION
+  STORAGE_WARNING
+  SECURITY_ALERT
+  SYSTEM_UPDATE
+}
