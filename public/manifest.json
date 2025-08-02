@@ -1,0 +1,77 @@
+{
+  "name": "SecureSnap Photo Sharing",
+  "short_name": "SecureSnap",
+  "description": "Secure photo sharing with face detection",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96x96.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Upload Photos",
+      "short_name": "Upload",
+      "description": "Upload new photos",
+      "url": "/upload",
+      "icons": [{ "src": "/icons/upload.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "View Shares",
+      "short_name": "Shares",
+      "description": "View shared albums",
+      "url": "/shares",
+      "icons": [{ "src": "/icons/share.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    }
+  ]
+}

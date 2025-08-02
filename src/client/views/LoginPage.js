@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { qrAuth } from '../services/qrAuth';
 import { timeLimitedLinks } from '../services/timeLimitedLinks';
 import { TwoFactorLogin } from '../components/TwoFactorLogin';
+import { BackgroundImage } from '../components/BackgroundImage';
 import { showNotification } from '../App';
 
 export function LoginPage({ navigate }) {
@@ -113,7 +114,8 @@ export function LoginPage({ navigate }) {
   }
 
   return (
-    <div class="login-page">
+    <div class="login-page with-background">
+      <BackgroundImage theme="login" blur={true} overlay={true} />
       <div class="login-container">
         <div class="login-header">
           <h1>Welcome to SecureSnap</h1>

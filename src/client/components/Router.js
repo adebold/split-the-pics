@@ -2,19 +2,25 @@ import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { HomePage } from '../views/HomePage';
 import { LoginPage } from '../views/LoginPage';
+import { SignupPage } from '../views/SignupPage';
 import { PhotosPage } from '../views/PhotosPage';
 import { UploadPage } from '../views/UploadPage';
 import { SettingsPage } from '../views/SettingsPage';
 import { SharePage } from '../views/SharePage';
+import { AdminLoginPage } from '../views/AdminLoginPage';
+import { AdminDashboard } from '../views/AdminDashboard';
 import { useAuth } from '../contexts/AuthContext';
 
 const routes = {
   '/': HomePage,
   '/login': LoginPage,
+  '/signup': SignupPage,
   '/photos': PhotosPage,
   '/upload': UploadPage,
   '/settings': SettingsPage,
   '/s/:shareId': SharePage,
+  '/admin/login': AdminLoginPage,
+  '/admin/dashboard': AdminDashboard,
 };
 
 export function Router() {
@@ -33,10 +39,20 @@ export function Router() {
 
   useEffect(() => {
     // Redirect to login if not authenticated
-    const publicPaths = ['/', '/login', '/s/'];
+    const publicPaths = ['/', '/login', '/s/', '/admin/login'];
     const isPublicPath = publicPaths.some(path => currentPath.startsWith(path));
+    const isAdminPath = currentPath.startsWith('/admin');
     
-    if (!loading && !user && !isPublicPath) {
+    // Handle admin authentication separately
+    if (isAdminPath && currentPath !== '/admin/login') {
+      const adminToken = localStorage.getItem('adminAccessToken');
+      if (!adminToken) {
+        navigate('/admin/login');
+        return;
+      }
+    }
+    
+    if (!loading && !user && !isPublicPath && !isAdminPath) {
       navigate('/login');
     }
   }, [user, loading, currentPath]);

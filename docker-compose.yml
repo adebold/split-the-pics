@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: securesnap
       POSTGRES_PASSWORD: securesnap_dev_password
     ports:
-      - "5432:5432"
+      - "5435:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -41,11 +41,10 @@ services:
       dockerfile: Dockerfile.dev
     container_name: securesnap-app
     environment:
-      NODE_ENV: development
       DATABASE_URL: postgresql://securesnap:securesnap_dev_password@postgres:5432/securesnap
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: dev_jwt_secret_change_in_production
-      ENCRYPTION_KEY: dev_encryption_key_32_characters_
+    env_file:
+      - .env.docker
     ports:
       - "3000:3000"  # Frontend
       - "5000:5000"  # Backend
@@ -61,7 +60,7 @@ services:
       sh -c "
         echo 'Waiting for database...' &&
         sleep 5 &&
-        npm run db:migrate &&
+        npx prisma generate &&
         npm run dev:all
       "
 
