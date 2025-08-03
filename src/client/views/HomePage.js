@@ -1,12 +1,14 @@
 import { h } from 'preact';
 import { useAuth } from '../contexts/AuthContext';
+import { BackgroundImage } from '../components/BackgroundImage';
 
 export function HomePage({ navigate }) {
   const { user } = useAuth();
 
   return (
     <div class="home-page">
-      <header class="hero">
+      <header class="hero with-background">
+        <BackgroundImage theme="share" blur={false} overlay={true} />
         <div class="hero-content">
           <h1>Welcome to SecureSnap</h1>
           <p class="hero-subtitle">
@@ -95,10 +97,19 @@ export function HomePage({ navigate }) {
         }
 
         .hero {
-          background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+          position: relative;
+          min-height: 100vh;
           color: white;
           padding: calc(var(--space-2xl) + var(--safe-top)) var(--space-md) var(--space-2xl);
           text-align: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .hero.with-background .hero-content {
+          position: relative;
+          z-index: 10;
         }
 
         .hero-content {

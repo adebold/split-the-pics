@@ -4,6 +4,7 @@ import { signal } from '@preact/signals';
 import { api } from '../services/api';
 import { storage } from '../services/storage';
 import { showNotification } from '../App';
+import { useAuth } from './AuthContext';
 
 // Global signals for photo state
 export const photos = signal([]);
@@ -14,15 +15,26 @@ export const uploadProgress = signal(0);
 const PhotoContext = createContext();
 
 export function PhotoProvider({ children }) {
+  const auth = useAuth();
   const [albums, setAlbums] = useState([]);
   const [currentAlbum, setCurrentAlbum] = useState(null);
   const [faceGroups, setFaceGroups] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadPhotos();
-  }, []);
+    // Only load photos if we have auth context and user is logged in
+    if (auth && auth.user && !auth.loading) {
+      loadPhotos();
+    }
+  }, [auth?.user, auth?.loading]);
 
   const loadPhotos = async () => {
+    if (!auth?.user) return; // Extra safety check
+    
+    setLoading(true);
+    setError(null);
+    
     try {
       // Try to load from cache first
       const cached = await storage.getPhotos();
@@ -38,7 +50,10 @@ export function PhotoProvider({ children }) {
       await storage.savePhotos(response.photos);
     } catch (error) {
       console.error('Failed to load photos:', error);
+      setError(error.message);
       // Use cached photos if available
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,6 +171,8 @@ export function PhotoProvider({ children }) {
     selectedPhotos: selectedPhotos.value,
     isUploading: isUploading.value,
     uploadProgress: uploadProgress.value,
+    loading,
+    error,
     loadPhotos,
     uploadPhotos,
     deletePhotos,

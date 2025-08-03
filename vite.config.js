@@ -5,6 +5,20 @@ import viteCompression from 'vite-plugin-compression';
 import path from 'path';
 
 export default defineConfig({
+  esbuild: {
+    loader: 'jsx',
+    include: [
+      'src/**/*.js',
+      'src/**/*.jsx',
+    ],
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+      },
+    },
+  },
   plugins: [
     preact(),
     VitePWA({
@@ -139,6 +153,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',
     port: 3000,
     proxy: {
       '/api': {

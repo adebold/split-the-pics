@@ -1,0 +1,246 @@
+/* Login Page Specific Styles */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  padding: var(--space-md);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-2xl);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.login-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* Login method tabs */
+.login-methods {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+  background: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.method-tab {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.method-tab.active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.method-tab:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+/* Login form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-md);
+  font-size: 0.875rem;
+}
+
+.link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* QR Code login */
+.qr-login {
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.qr-code {
+  display: block;
+  width: 200px;
+  height: 200px;
+  padding: var(--space-md);
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+.qr-instructions {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  max-width: 250px;
+}
+
+.qr-expire-notice {
+  font-size: 0.75rem;
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 4px;
+}
+
+/* Magic link */
+.magic-link-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.magic-link-sent {
+  text-align: center;
+  padding: var(--space-2xl) 0;
+}
+
+.magic-link-sent .success-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-lg);
+}
+
+.magic-link-sent h2 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.magic-link-sent p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+/* Buttons */
+.btn-full {
+  width: 100%;
+}
+
+/* Loading states */
+.login-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  gap: var(--space-md);
+}
+
+/* Input group styling */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.input-group .label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.input-group .input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--bg-primary);
+  transition: all var(--transition-fast);
+}
+
+.input-group .input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-group .input:disabled {
+  background: var(--bg-tertiary);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Error messages */
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--danger);
+  padding: var(--space-md);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-lg);
+}
+
+/* Success messages */
+.success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--success);
+  padding: var(--space-md);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-lg);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .login-container {
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .login-page {
+    padding: 0;
+  }
+}

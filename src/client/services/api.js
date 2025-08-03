@@ -6,6 +6,8 @@ class API {
     this.baseURL = import.meta.env.VITE_API_URL || '/api';
     this.token = null;
     this.refreshToken = null;
+    this.adminToken = null;
+    this.adminRefreshToken = null;
     this.ws = null;
     this.initializeAuth();
   }
@@ -14,6 +16,8 @@ class API {
     // Load tokens from storage
     this.token = localStorage.getItem('accessToken');
     this.refreshToken = localStorage.getItem('refreshToken');
+    this.adminToken = localStorage.getItem('adminAccessToken');
+    this.adminRefreshToken = localStorage.getItem('adminRefreshToken');
   }
 
   async request(endpoint, options = {}) {
@@ -24,8 +28,12 @@ class API {
       ...options.headers
     };
 
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+    // Use admin token for admin endpoints
+    const isAdminEndpoint = endpoint.startsWith('/admin');
+    const token = isAdminEndpoint ? this.adminToken : this.token;
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     try {

@@ -1,6 +1,9 @@
 import { h, render } from 'preact';
 import { App } from './App';
 import './styles/main.css';
+import './styles/auth.css';
+import './styles/login.css';
+import './styles/background.css';
 
 // Initialize app
 const container = document.getElementById('app');

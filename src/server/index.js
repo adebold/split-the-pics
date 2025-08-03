@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/node';
 import authRoutes from './routes/auth.js';
 import photoRoutes from './routes/photos.js';
 import shareRoutes from './routes/shares.js';
+import adminRoutes from './routes/admin.js';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js';
@@ -110,6 +111,7 @@ app.use('/api/', rateLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/photos', photoRoutes);
 app.use('/api/shares', shareRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint with detailed status
 app.get('/api/health', healthCheck({
