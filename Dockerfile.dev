@@ -1,5 +1,5 @@
 # Development Dockerfile with hot reloading
-FROM node:18-alpine
+FROM node:24-alpine
 
 # Install development dependencies
 RUN apk add --no-cache python3 make g++ git openssl openssl-dev
